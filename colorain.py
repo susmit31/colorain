@@ -1,4 +1,4 @@
-from colours import *
+from .colours import *
 
 class ColoredText:
     def __init__(self, text):
