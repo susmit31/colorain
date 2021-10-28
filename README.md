@@ -13,4 +13,4 @@ txt = ColoredText('`f|y`Okay`f|n`, workin `f|c`fine`f|n`') # parses the colour t
 print(txt) # prints the coloured text
 print(txt.raw_text()) # strips off the colour tags
 ```
-![Colorain](https://github.com/susmit31/colorain/ss.png)
+![Colorain](https://github.com/susmit31/colorain/blob/master/ss.png)
