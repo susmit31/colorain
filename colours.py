@@ -25,28 +25,36 @@ def make_tokens(ground, names):
             elif 'gray' in key: alias+='gr'
             else:
                 alias += key[key.find('light')+len('light')]
-        tokens[key] = f'`{"f" if ground=="FG" else "b"}|{alias}`'
+        tokens[key] = f'<{"f" if ground=="FG" else "b"}={alias}>'
     return tokens
 
 class Color:
-    def __init__(self, GROUND):
-        code = gcode(GROUND)
-        self.black = f"0;{code('black')}"
-        self.red = f'0;{code("red")}'
-        self.green = f"0;{code('green')}"
-        self.orange = f'0;{code("yellow")}'
-        self.blue = f'0;{code("blue")}'
-        self.purple = f'0;{code("purple")}'
-        self.cyan = f'0;{code("cyan")}'
-        self.lightgray = f'0;{code("gray")}'
-        self.darkgray = f'1;{code("black")}'
-        self.lightred = f'1;{code("red")}'
-        self.lightgreen = f'1;{code("green")}'
-        self.yellow = f'1;{code("yellow")}'
-        self.lightblue = f'1;{code("blue")}'
-        self.lightpurple = f'1;{code("purple")}'
-        self.lightcyan = f'1;{code("cyan")}'
-        #self.bold = '1'
+    def __init__(self, ground):
+        code = gcode(ground)
+        if ground=='FG':
+            self.black = f"0;{code('black')}"
+            self.red = f'0;{code("red")}'
+            self.green = f"0;{code('green')}"
+            self.orange = f'0;{code("yellow")}'
+            self.yellow = f'1;{code("yellow")}'
+            self.blue = f'0;{code("blue")}'
+            self.purple = f'0;{code("purple")}'
+            self.cyan = f'0;{code("cyan")}'
+            self.darkgray = f'1;{code("black")}'
+            self.lightred = f'1;{code("red")}'
+            self.lightgreen = f'1;{code("green")}'
+            self.lightblue = f'1;{code("blue")}'
+            self.lightpurple = f'1;{code("purple")}'
+            self.lightcyan = f'1;{code("cyan")}'
+        else:
+            self.black = f"1;{code('black')}"
+            self.red = f'1;{code("red")}'
+            self.green = f"1;{code('green')}"
+            self.yellow = f'1;{code("yellow")}'
+            self.blue = f'1;{code("blue")}'
+            self.purple = f'1;{code("purple")}'
+            self.cyan = f'1;{code("cyan")}'
+            self.darkgray = f'1;{code("black")}'
         self.none = '0'
     def dict_codes(self):
         clr_dict = self.__dict__
@@ -59,4 +67,14 @@ class Color:
 fgcodes = Color('FG').dict_codes()
 bgcodes = Color('BG').dict_codes()
 fgtokens = make_tokens('FG',fgcodes.keys())
-bgtokens = make_tokens('BG', fgcodes.keys())
+bgtokens = make_tokens('BG', bgcodes.keys())
+fgtokens['none'] = '</>'
+bgtokens['none'] = '</>'
+
+def make_code(bg = None, fg = None):
+    code = ''
+    if bg != None:
+        code += bgcodes.get(bg) + fgcodes.get(fg)[2:]
+    else:
+        code += fgcodes.get(fg)
+    return code
