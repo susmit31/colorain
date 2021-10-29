@@ -7,7 +7,7 @@ pip install colorain
 ```
 
 ## Usage
-Using a very simple markup that kinda looks like HTML, you can easily modify the colour of different parts of some text. The following example is pretty self explanatory. The general syntax is: <f=C>Text</> colours the foreground with colour C, i.e. the text, <b=C>Text</> colours the background with colour C, and <f=C1;b=C2>Text</> or <b=C2;f=C1> colours the foreground with C1 and the background with C2.
+Using a very simple markup that kinda looks like HTML, you can easily modify the colour of different parts of some text. The following example is pretty self explanatory. The general syntax is: `<f=C>Text</>` colours the foreground with colour C, i.e. the text, `<b=C>Text</>` colours the background with colour C, and `<f=C1;b=C2>Text</>` or `<b=C2;f=C1>` colours the foreground with C1 and the background with C2.
 ```python
 from colorain import *
 # parses the colour tags and colour-codes the text as needed
