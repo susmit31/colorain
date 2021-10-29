@@ -1,6 +1,7 @@
 from .colours import *
 
 class ColoredText:
+    #blah
     def __init__(self, text):
         self.text = text
         self.parsed = self.parse_color()
