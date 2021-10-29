@@ -28,6 +28,15 @@ def make_tokens(ground, names):
         tokens[key] = f'<{"f" if ground=="FG" else "b"}={alias}>'
     return tokens
 
+def parse_token(token):
+    parsed_token = {}
+    for subtoken in token:
+        if subtoken[0]=='f':
+            parsed_token['fg'] = fg_invtokens[subtoken.split('=')[1]]
+        elif subtoken[0]=='b':
+            parsed_token['bg'] = bg_invtokens[subtoken.split('=')[1]]
+    return make_code(**parsed_token)
+
 class Color:
     def __init__(self, ground):
         code = gcode(ground)
@@ -63,18 +72,22 @@ class Color:
         return clr_dict
 
 
-
 fgcodes = Color('FG').dict_codes()
 bgcodes = Color('BG').dict_codes()
 fgtokens = make_tokens('FG',fgcodes.keys())
 bgtokens = make_tokens('BG', bgcodes.keys())
+
+fg_invtokens = {fgtokens[k].split('=')[1][:-1]:k for k in fgtokens}
+bg_invtokens = {bgtokens[k].split('=')[1][:-1]:k for k in bgtokens}
+
 fgtokens['none'] = '</>'
 bgtokens['none'] = '</>'
+
 
 def make_code(bg = None, fg = None):
     code = ''
     if bg != None:
-        code += bgcodes.get(bg) + fgcodes.get(fg)[2:]
+        code += f"{bgcodes.get(bg)[:-1]};{fgcodes.get(fg).split(';')[1][:-1]}m"
     else:
         code += fgcodes.get(fg)
     return code

@@ -1,4 +1,8 @@
-from colours import *
+from .colours import *
+import re
+
+# Defining token pattern
+MIXED_TOKEN_PTN = r'<((?:f|b)=.);((?:f|b)=.)>'
 
 # Core "parent" class: ColoredText
 class ColoredText:
@@ -19,11 +23,16 @@ class ColoredText:
                 parsed_text = parsed_text.replace(fgtokens[key], fgcodes[key])
             for key in bgtokens:
                 parsed_text = parsed_text.replace(bgtokens[key], bgcodes[key])
+            for token in re.findall(MIXED_TOKEN_PTN, parsed_text):
+                parsed_token = parse_token(token)
+                parsed_text = parsed_text.replace(f'<{token[0]};{token[1]}>', parsed_token)
         elif replacer == 'raw':
             for key in fgtokens:
                 parsed_text = parsed_text.replace(fgtokens[key], '')
             for key in bgtokens:
                 parsed_text = parsed_text.replace(bgtokens[key], '')
+            for token in re.findall(MIXED_TOKEN_PTN, parsed_text):
+                parsed_text = parsed_text.replace(f'<{token[0]};{token[1]}>', '')
         return parsed_text
    
     def add_fg_color(self, color):
