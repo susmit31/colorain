@@ -14,6 +14,20 @@ GROUND = {'BG':4, 'FG':3} # Background prefix
 def gcode(ground):
     return lambda clr: f"{GROUND[ground]}{BASE_CLR[clr]}"
 
+def make_tokens(ground, names):
+    tokens = {}
+    for key in names:
+        if 'black'==key: alias = 'k'
+        elif 'gray'==key: alias = 'gr'
+        else: alias = key[0]
+        if 'light' in key:
+            if 'black' in key: alias+='k'
+            elif 'gray' in key: alias+='gr'
+            else:
+                alias += key[key.find('light')+len('light')]
+        tokens[key] = f'`{"f" if ground=="FG" else "b"}|{alias}`'
+    return tokens
+
 class Color:
     def __init__(self, GROUND):
         code = gcode(GROUND)
@@ -40,5 +54,9 @@ class Color:
             clr_dict[clr] = f'\033[{clr_dict[clr]}m'
         return clr_dict
 
+
+
 fgcodes = Color('FG').dict_codes()
 bgcodes = Color('BG').dict_codes()
+fgtokens = make_tokens('FG',fgcodes.keys())
+bgtokens = make_tokens('BG', fgcodes.keys())

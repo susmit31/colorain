@@ -1,1 +1,1 @@
-from .colorain import ColoredText
+from .colorain import *
