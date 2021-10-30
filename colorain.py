@@ -1,7 +1,7 @@
 from colours import *
 import re
 
-# Core "parent" class: ColoredText
+# Core "parent" class: StyledText
 class StyledText:
     def __init__(self, text):
         self.text = text
@@ -17,7 +17,8 @@ class StyledText:
         parsed_text = self.text
         
         # Defining token pattern
-        TOKEN_PTN = r'<(B|I|U|/|(?:f=.)|(?:b=.))'+'(?:;(B|I|U|(?:f=.)|(?:b=.)))?'*4+'>'
+        TOKEN_PTN = r'<(B|I|U|/|(?:f=.{0,2})|(?:b=.{0,2}))' +\
+                    r'(?:;(B|I|U|(?:f=.{0,2})|(?:b=.{0,2})))?'*4 + '>'
         for token in re.findall(TOKEN_PTN, parsed_text):
             mx_replacer = parse_token(token) if replacer=='color' else ''
             parsed_text = parsed_text.replace(f"<{';'.join(token).strip(';')}>", mx_replacer)
@@ -25,11 +26,11 @@ class StyledText:
         return parsed_text
    
     def add_fg_color(self, color):
-        self.text = f'{fgtokens[color]}{self.raw_text()}{fgtokens["none"]}'
+        self.text = f'<{fgtokens[color]}>{self.raw_text()}<{fgtokens["end"]}>'
         self.parsed = self.parse_color()
     
     def add_bg_color(self, color):
-        self.text = f'{bgtokens[color]}{self.raw_text()}{fgtokens["none"]}'
+        self.text = f'<{bgtokens[color]}>{self.raw_text()}<{fgtokens["end"]}>'
         self.parsed = self.parse_color()
     
     def __repr__(self):

@@ -74,10 +74,10 @@ def make_clrcodes():
     
     for clr in CLR_CODE:
         fgcodes['orange' if clr=='yellow' else clr] = make_fgcode(clr)
-        bgcodes[clr] = make_bgcode(clr)
+        bgcodes['orange' if clr=='yellow' else clr] = make_bgcode(clr)
     for clr in CLR_CODE:
         fgcodes[clr if clr=='yellow' else ('gray' if clr=='black' else 'light'+clr)] = f'1;{make_fgcode(clr)}' 
-
+        bgcodes[clr if clr=='yellow' else ('gray' if clr=='black' else 'light'+clr)] = f'{make_fgcode(clr)}'
     return fgcodes, bgcodes
 
 fgcodes, bgcodes = make_clrcodes()
@@ -89,5 +89,5 @@ bgtokens = make_tokens('BG', bgcodes.keys())
 fg_abbrs = {fgtokens[k].split('=')[1]:k for k in fgtokens}
 bg_abbrs = {bgtokens[k].split('=')[1]:k for k in bgtokens}
 
-fgtokens['end'] = '</>'
-bgtokens['end'] = '</>'
+fgtokens['end'] = '/'
+bgtokens['end'] = '/'
