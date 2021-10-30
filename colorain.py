@@ -1,11 +1,8 @@
-from .colours import *
+from colours import *
 import re
 
-# Defining token pattern
-MIXED_TOKEN_PTN = r'<((?:f|b)=.);((?:f|b)=.)>'
-
 # Core "parent" class: ColoredText
-class ColoredText:
+class StyledText:
     def __init__(self, text):
         self.text = text
         self.parsed = self.parse_color()
@@ -18,21 +15,13 @@ class ColoredText:
    
     def parse_tokens(self, replacer):
         parsed_text = self.text
-        if replacer=='color':
-            for key in fgtokens:
-                parsed_text = parsed_text.replace(fgtokens[key], fgcodes[key])
-            for key in bgtokens:
-                parsed_text = parsed_text.replace(bgtokens[key], bgcodes[key])
-            for token in re.findall(MIXED_TOKEN_PTN, parsed_text):
-                parsed_token = parse_token(token)
-                parsed_text = parsed_text.replace(f'<{token[0]};{token[1]}>', parsed_token)
-        elif replacer == 'raw':
-            for key in fgtokens:
-                parsed_text = parsed_text.replace(fgtokens[key], '')
-            for key in bgtokens:
-                parsed_text = parsed_text.replace(bgtokens[key], '')
-            for token in re.findall(MIXED_TOKEN_PTN, parsed_text):
-                parsed_text = parsed_text.replace(f'<{token[0]};{token[1]}>', '')
+        
+        # Defining token pattern
+        TOKEN_PTN = r'<(B|I|U|/|(?:f=.)|(?:b=.))'+'(?:;(B|I|U|(?:f=.)|(?:b=.)))?'*4+'>'
+        for token in re.findall(TOKEN_PTN, parsed_text):
+            mx_replacer = parse_token(token) if replacer=='color' else ''
+            parsed_text = parsed_text.replace(f"<{';'.join(token).strip(';')}>", mx_replacer)
+
         return parsed_text
    
     def add_fg_color(self, color):
@@ -53,7 +42,7 @@ class ColoredText:
             return ColoredText(self.text+clrtxt.text)
 
 # Foreground colouring: wrapper classes
-class FGColor(ColoredText):
+class FGColor(StyledText):
     def __init__(self, text, color):
         super().__init__(text)
         self.add_fg_color(color)
@@ -107,7 +96,7 @@ class FGLtBlue(FGColor):
         super().__init__(text, 'lightblue')
 
 # Background colouring: wrapper classes
-class BGColor(ColoredText):
+class BGColor(StyledText):
     def __init__(self, text, color):
         super().__init__(text)
         self.add_bg_color(color)
@@ -139,3 +128,20 @@ class BGBlue(BGColor):
 class BGPurple(BGColor):
     def __init__(self, text):
         super().__init__(text, 'purple')
+
+# General formatting: wrapper classes
+class FmtText(StyledText):
+    def __init__(self, text, fmt):
+        super().__init__(f"<{fmt}>{text}</>")
+
+class Italic(FmtText):
+    def __init__(self, text):
+        super().__init__(text, 'I') 
+
+class Bold(FmtText):
+    def __init__(self, text):
+        super().__init__(text, 'B')
+
+class Underline(FmtText):
+    def __init__(self, text):
+        super().__init__(text, 'U')

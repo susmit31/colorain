@@ -1,4 +1,5 @@
-BASE_CLR = {
+# Styling codes
+CLR_CODE = {
     'black':0,
     'red':1,
     'green':2,
@@ -6,13 +7,21 @@ BASE_CLR = {
     'blue':4,
     'purple':5,
     'cyan':6,
-    'gray':7
 }
 
-GROUND = {'BG':4, 'FG':3} # Background prefix
+FMT_CODE = {
+    'B':1, # bold
+    'I': 3, # italic
+    'U':4 # underline
+}
 
+# Foreground and background
+GRD_CODE = {'BG':4, 'FG':3}
+
+# Returns a function that returns the code for using a colour in
+# the foreground or the background
 def gcode(ground):
-    return lambda clr: f"{GROUND[ground]}{BASE_CLR[clr]}"
+    return lambda clr: f"{GRD_CODE[ground]}{CLR_CODE[clr]}"
 
 def make_tokens(ground, names):
     tokens = {}
@@ -25,69 +34,60 @@ def make_tokens(ground, names):
             elif 'gray' in key: alias+='gr'
             else:
                 alias += key[key.find('light')+len('light')]
-        tokens[key] = f'<{"f" if ground=="FG" else "b"}={alias}>'
+        tokens[key] = f'{"f" if ground=="FG" else "b"}={alias}'
     return tokens
 
 def parse_token(token):
     parsed_token = {}
+    fmt_tags = ['B', 'I', 'U']
     for subtoken in token:
-        if subtoken[0]=='f':
-            parsed_token['fg'] = fg_invtokens[subtoken.split('=')[1]]
-        elif subtoken[0]=='b':
-            parsed_token['bg'] = bg_invtokens[subtoken.split('=')[1]]
-    return make_code(**parsed_token)
+        if len(subtoken):
+            if subtoken[0]=='f':
+                parsed_token['fg'] = fg_abbrs[subtoken.split('=')[1].strip()]
+            elif subtoken[0]=='b':
+                parsed_token['bg'] = bg_abbrs[subtoken.split('=')[1].strip()]
+            elif subtoken[0] in fmt_tags:
+                tag = fmt_tags[fmt_tags.index(subtoken[0])]
+                parsed_token[tag] = True
+            elif subtoken[0]=='/':
+                parsed_token['end'] = True
+    return token_to_code(**parsed_token)
 
-class Color:
-    def __init__(self, ground):
-        code = gcode(ground)
-        if ground=='FG':
-            self.black = f"0;{code('black')}"
-            self.red = f'0;{code("red")}'
-            self.green = f"0;{code('green')}"
-            self.orange = f'0;{code("yellow")}'
-            self.yellow = f'1;{code("yellow")}'
-            self.blue = f'0;{code("blue")}'
-            self.purple = f'0;{code("purple")}'
-            self.cyan = f'0;{code("cyan")}'
-            self.darkgray = f'1;{code("black")}'
-            self.lightred = f'1;{code("red")}'
-            self.lightgreen = f'1;{code("green")}'
-            self.lightblue = f'1;{code("blue")}'
-            self.lightpurple = f'1;{code("purple")}'
-            self.lightcyan = f'1;{code("cyan")}'
-        else:
-            self.black = f"1;{code('black')}"
-            self.red = f'1;{code("red")}'
-            self.green = f"1;{code('green')}"
-            self.yellow = f'1;{code("yellow")}'
-            self.blue = f'1;{code("blue")}'
-            self.purple = f'1;{code("purple")}'
-            self.cyan = f'1;{code("cyan")}'
-            self.darkgray = f'1;{code("black")}'
-        self.none = '0'
-    def dict_codes(self):
-        clr_dict = self.__dict__
-        for clr in clr_dict:
-            clr_dict[clr] = f'\033[{clr_dict[clr]}m'
-        return clr_dict
+def token_to_code(bg = None, fg = None, B=None, I=None, U=None, end=None):
+    code = '\033['
+    if bg: code += f"{bgcodes[bg]};"
+    if fg: code += f"{fgcodes[fg]};"
+    if B: code += f"{FMT_CODE['B']};"
+    if U: code += f"{FMT_CODE['U']};"
+    if I: code += f"{FMT_CODE['I']};"
+    if end: code += f"{fgcodes['end']};"
+    code = code.strip(';')
+    code += "m"
+    return code
 
+def make_clrcodes():
+    fgcodes = {}
+    bgcodes = {}
+    
+    make_fgcode = gcode('FG')
+    make_bgcode = gcode('BG')
+    
+    for clr in CLR_CODE:
+        fgcodes['orange' if clr=='yellow' else clr] = make_fgcode(clr)
+        bgcodes[clr] = make_bgcode(clr)
+    for clr in CLR_CODE:
+        fgcodes[clr if clr=='yellow' else ('gray' if clr=='black' else 'light'+clr)] = f'1;{make_fgcode(clr)}' 
 
-fgcodes = Color('FG').dict_codes()
-bgcodes = Color('BG').dict_codes()
+    return fgcodes, bgcodes
+
+fgcodes, bgcodes = make_clrcodes()
+fgcodes['end'], bgcodes['end'] = '0','0'
+
 fgtokens = make_tokens('FG',fgcodes.keys())
 bgtokens = make_tokens('BG', bgcodes.keys())
 
-fg_invtokens = {fgtokens[k].split('=')[1][:-1]:k for k in fgtokens}
-bg_invtokens = {bgtokens[k].split('=')[1][:-1]:k for k in bgtokens}
+fg_abbrs = {fgtokens[k].split('=')[1]:k for k in fgtokens}
+bg_abbrs = {bgtokens[k].split('=')[1]:k for k in bgtokens}
 
-fgtokens['none'] = '</>'
-bgtokens['none'] = '</>'
-
-
-def make_code(bg = None, fg = None):
-    code = ''
-    if bg != None:
-        code += f"{bgcodes.get(bg)[:-1]};{fgcodes.get(fg).split(';')[1][:-1]}m"
-    else:
-        code += fgcodes.get(fg)
-    return code
+fgtokens['end'] = '</>'
+bgtokens['end'] = '</>'
