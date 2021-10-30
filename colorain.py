@@ -1,4 +1,4 @@
-from colours import *
+from .colours import *
 import re
 
 # Core "parent" class: StyledText
@@ -38,9 +38,9 @@ class StyledText:
     
     def __add__(self, clrtxt):
         if 'str' in str(type(clrtxt)):
-            return ColoredText(self.text+clrtxt)
+            return StyledText(self.text+clrtxt)
         if 'colorain' in str(type(clrtxt)):
-            return ColoredText(self.text+clrtxt.text)
+            return StyledText(self.text+clrtxt.text)
 
 # Foreground colouring: wrapper classes
 class FGColor(StyledText):
