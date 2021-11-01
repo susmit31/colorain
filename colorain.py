@@ -1,7 +1,12 @@
 from .colours import *
+from .errors import *
 import re
 
-# Core "parent" class: StyledText
+##################################################
+# Core styling class: StyledText. Every object in
+# this library is a StyledText object or inherits
+# from it.
+##################################################
 class StyledText:
     def __init__(self, text):
         self.text = text
@@ -17,11 +22,11 @@ class StyledText:
         parsed_text = self.text
         
         # Defining token pattern
-        TOKEN_PTN = r'<(B|I|U|/|(?:f=.{0,2})|(?:b=.{0,2}))' +\
+        TAG_PTN = r'<(B|I|U|/|(?:f=.{0,2})|(?:b=.{0,2}))' +\
                     r'(?:;(B|I|U|(?:f=.{0,2})|(?:b=.{0,2})))?'*4 + '>'
-        for token in re.findall(TOKEN_PTN, parsed_text):
-            mx_replacer = parse_token(token) if replacer=='color' else ''
-            parsed_text = parsed_text.replace(f"<{';'.join(token).strip(';')}>", mx_replacer)
+        for tag in re.findall(TAG_PTN, parsed_text):
+            mx_replacer = parse_token(tag) if replacer=='color' else ''
+            parsed_text = parsed_text.replace(f"<{';'.join(tag).strip(';')}>", mx_replacer)
 
         return parsed_text
    
@@ -42,7 +47,10 @@ class StyledText:
         if 'colorain' in str(type(clrtxt)):
             return StyledText(self.text+clrtxt.text)
 
-# Foreground colouring: wrapper classes
+
+##################################################
+# Foreground colouring: wrapper classes #
+##################################################
 class FGColor(StyledText):
     def __init__(self, text, color):
         super().__init__(text)
@@ -76,6 +84,10 @@ class FGPurple(FGColor):
     def __init__(self, text):
         super().__init__(text, 'purple')
 
+class FGBlue(FGColor):
+    def __init__(self, text):
+        super().__init__(text, 'blue')
+
 class FGLtRed(FGColor):
     def __init__(self, text):
         super().__init__(text, 'lightred')
@@ -96,7 +108,10 @@ class FGLtBlue(FGColor):
     def __init__(self, text):
         super().__init__(text, 'lightblue')
 
-# Background colouring: wrapper classes
+
+##################################################
+# Background colouring: wrapper classes #
+##################################################
 class BGColor(StyledText):
     def __init__(self, text, color):
         super().__init__(text)
@@ -130,7 +145,10 @@ class BGPurple(BGColor):
     def __init__(self, text):
         super().__init__(text, 'purple')
 
-# General formatting: wrapper classes
+
+##################################################
+# General formatting: wrapper classes #
+##################################################
 class FmtText(StyledText):
     def __init__(self, text, fmt):
         super().__init__(f"<{fmt}>{text}</>")

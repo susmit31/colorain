@@ -1,4 +1,8 @@
-# Styling codes
+from .errors import *
+
+##################################################
+# Styling codes #
+##################################################
 CLR_CODE = {
     'black':0,
     'red':1,
@@ -15,14 +19,23 @@ FMT_CODE = {
     'U':4 # underline
 }
 
-# Foreground and background
+
+##################################################
+# Foreground and background #
+##################################################
 GRD_CODE = {'BG':4, 'FG':3}
 
-# Returns a function that returns the code for using a colour in
-# the foreground or the background
+
+##################################################
+# Making the colour codes #
+##################################################
 def gcode(ground):
     return lambda clr: f"{GRD_CODE[ground]}{CLR_CODE[clr]}"
 
+
+##################################################
+# Making and parsing tokens for each colour #
+##################################################
 def make_tokens(ground, names):
     tokens = {}
     for key in names:
@@ -43,17 +56,24 @@ def parse_token(token):
     for subtoken in token:
         if len(subtoken):
             if subtoken[0]=='f':
-                parsed_token['fg'] = fg_abbrs[subtoken.split('=')[1].strip()]
+                prop_val = subtoken.split('=')[1].strip()
+                if prop_val not in fg_abbrs:
+                    raise InvalidValueError(subtoken[0], prop_val)
+                parsed_token['fg'] = fg_abbrs[prop_val]
             elif subtoken[0]=='b':
-                parsed_token['bg'] = bg_abbrs[subtoken.split('=')[1].strip()]
+                prop_val = subtoken.split('=')[1].strip()
+                if prop_val not in bg_abbrs:
+                    raise InvalidValueError(subtoken[0], prop_val)
+                parsed_token['bg'] = bg_abbrs[prop_val]
             elif subtoken[0] in fmt_tags:
-                tag = fmt_tags[fmt_tags.index(subtoken[0])]
-                parsed_token[tag] = True
+                parsed_token[subtoken[0]] = True
             elif subtoken[0]=='/':
                 parsed_token['end'] = True
-    return token_to_code(**parsed_token)
+            else:
+                raise InvalidPropError(subtoken[0])
+    return parsed_token_to_code(**parsed_token)
 
-def token_to_code(bg = None, fg = None, B=None, I=None, U=None, end=None):
+def parsed_token_to_code(bg = None, fg = None, B=None, I=None, U=None, end=None):
     code = '\033['
     if bg: code += f"{bgcodes[bg]};"
     if fg: code += f"{fgcodes[fg]};"
