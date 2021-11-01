@@ -29,3 +29,7 @@ class TokenSyntaxError(Exception):
 
     def __str__(self):
         return f'Invalid syntax for token {self.token}.'
+
+class EmptyTokenError(Exception):
+    def __init__(self):
+        super().__init__("The start token is empty")
