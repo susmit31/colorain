@@ -69,7 +69,7 @@ def parse_token(token):
                     if prop_val:
                         raise InvalidValueError(subtoken[0], prop_val)
                     else:
-                        raise UnspecifiedValueError(subtoken[0])
+                        raise MissingValueError(subtoken[0])
                 if subtoken[0]=='f':
                     parsed_token['fg'] = fg_abbrs[prop_val]
                 else:

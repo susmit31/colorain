@@ -16,7 +16,7 @@ class InvalidValueError(Exception):
     def __str__(self):
         return f'The value {self.val} is invalid for prop {self.prop}.'
 
-class UnspecifiedValueError(Exception):
+class MissingValueError(Exception):
     def __init__(self, prop):
         self.prop = prop
     
