@@ -43,9 +43,7 @@ print(title2)
 
 ### Useful Features
 **parse_color() and raw_text()**:
-Any StyledText object has a couple of methods you might find useful. StyledText.parse_color() gives you the parsed output string, i.e., ANSI colour-coded string. This is the string you might directly print using the print() function, and the output will be coloured as required. This is useful, for example, if you want to copy the ANSI coded string. You could send that to any friend of yours who hasn't installed colorain and they could copy the string to directly print the styled text.
-
-In case you want to strip the text of all styles, the StyledText.raw_text() method is what you're looking for. (By the way, in the following snippet I'm using a third-party module called clipboard. You should check that out if you haven't already - really great for automating certain tasks!)
+Any StyledText object has a couple of methods you might find useful. `StyledText.parse_color()` gives you the parsed output string, i.e., ANSI colour-coded string. This is the string you might directly print using the print() function, and the output will be coloured as required. This is useful, for example, if you want to copy the ANSI coded string. You could send that to any friend of yours who hasn't installed colorain and they could copy the string to directly print the styled text. In case you want to strip the text of all styles, the `StyledText.raw_text()` method is what you're looking for. (By the way, in the following snippet I'm using a third-party module called clipboard. You should check that out if you haven't already - really great for automating certain tasks!)
 ```
 import clipboard
 print(title1.parse_color())
@@ -56,7 +54,7 @@ clipboard.copy(title1.raw_text()) # copies an unstyled version of the string to 
 ![screenshot-3](https://raw.githubusercontent.com/susmit31/colorain/master/assets/colorain-3.png)
 
 **Wrapper Classes**:
-In case you have to style short stretches of text, using the markup is very easy. However, what if you had a long stretch of text styled the same way? It might become kinda tedious to remember to put in the end tag. If that's what you're worried about, then you can use the wrapper classes built into colorain, all of which inherit from StyledText.
+In case you have to style short stretches of text, using the markup is very easy. However, what if you had a long stretch of text styled the same way? It might become kinda tedious to remember to put in the end tag. If that's what you're worried about, then you can use the wrapper classes built into colorain, all of which inherit from `StyledText`.
 ```
 print(FGYellow("""\
     In case you have to style short stretches of text, using the markup is very easy. However, what if you had a long
@@ -82,7 +80,7 @@ print(Italic("""\
 ![screenshot-5](https://raw.githubusercontent.com/susmit31/colorain/master/assets/colorain-5.png)
 
 **Adding together styled strings**:
-colorain overloads the "+" operator for StyledText objects so that you can manipulate StyledText objects as you manipulate regular strings. 
+colorain overloads the `+` operator for `StyledText` objects so that you can manipulate them as you manipulate regular strings. 
 ```
 print(FGYellow("""\
     In case you have to style short stretches of text, using the markup is very easy. However, what if you had a long
