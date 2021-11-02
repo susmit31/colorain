@@ -16,7 +16,11 @@ print(txt)
 ```
 ![screenshot-1](https://raw.githubusercontent.com/susmit31/colorain/master/assets/colorain-1.png)
 
-You can use the
+*You can use the `styles_guide()` helper function to view all the available styles and the tags for them.*
+```
+styles_guide()
+```
+![screenshot-4](https://raw.githubusercontent.com/susmit31/colorain/master/assets/colorain-4.png)
 
 The core class in colorain is the StyledText class. The constructor takes a string marked up with the colorain markup and parses that to generate styled strings. The markup is fairly similar in spirit to HTML, and so is pretty simple to remember. For styling some part of a text, tag up the beginning and end of that part by the start tag/token and the end tag/token. The end tag is always the same: </>. The start tag specifies styling properties, called props. In the above code, f=y tells colorain to colour the foreground, i.e., the text itself, with 'y' i.e. yellow. Similarly, b=r tells colorain to paint the background with red. The following props, B, I, and U, tell colorain to make the text bold, italic, and underlined. You don't have to specify the props in any specific order. The start tag must contain _at least_ one styling prop.
 
