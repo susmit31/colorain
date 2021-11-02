@@ -14,7 +14,7 @@ from colorain import *
 txt = StyledText("<f=y;b=r;B;I;U>Hello world</>") 
 print(txt)
 ```
-![screenshot-1](https://github.com/susmit31/colorain/tree/master/assets/colorain-1.png)
+![screenshot-1](https://raw.githubusercontent.com/susmit31/colorain/master/assets/colorain-1.png)
 
 You can use the
 
@@ -29,11 +29,11 @@ print(title1)
 title2 = StyledText("<f=r>c</> <f=o>o</> <f=y>l</> <f=g>o</> <f=b>r</> <f=gr>a</> <f=lr>i</> <f=c>n</>")
 print(title2)
 ```
-![screenshot-2](https://github.com/susmit31/colorain/tree/master/assets/colorain-2.png)
+![screenshot-2](https://raw.githubusercontent.com/susmit31/colorain/master/assets/colorain-2.png)
 
 By the way, any StyledText object has a couple of methods you might find useful. StyledText.parse_color() gives you the parsed output string. This is the string you might directly print using the print() function, and the output will be coloured as required. In case you want to strip the text of all styles, the StyledText.raw_text() method is what you're looking for.
 ```
 print(title1.parse_color())
 print(title1.raw_text())
 ```
-![screenshot-3](https://github.com/susmit31/colorain/tree/master/assets/colorain-3.png)
+![screenshot-3](https://raw.githubusercontent.com/susmit31/colorain/master/assets/colorain-3.png)
