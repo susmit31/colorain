@@ -19,6 +19,7 @@ FMT_CODE = {
     'U':4 # underline
 }
 
+FMT_NAMES = {'B': 'bold', 'I': 'italic', 'U': 'underline'}
 
 ##################################################
 # Foreground and background #
@@ -43,14 +44,14 @@ def make_tokens(ground, names):
             alias = 'k'
         elif 'gray'==key: 
             alias = 'gr'
-        else: 
+        else:
             alias = key[0]
-
-        if 'light' in key:
-            if 'black' in key: alias+='k'
-            elif 'gray' in key: alias+='gr'
-            else:
-                alias += key[key.find('light')+len('light')]
+        if ground=='FG':
+            if 'light' in key:
+                if 'black' in key: alias+='k'
+                elif 'gray' in key: alias+='gr'
+                else:
+                    alias += key[key.find('light')+len('light')]
 
         tokens[key] = f'{"f" if ground=="FG" else "b"}={alias}'
     
@@ -114,8 +115,7 @@ def make_clrcodes():
         fgcodes['orange' if clr=='yellow' else clr] = make_fgcode(clr)
         bgcodes['orange' if clr=='yellow' else clr] = make_bgcode(clr)
     for clr in CLR_CODE:
-        fgcodes[clr if clr=='yellow' else ('gray' if clr=='black' else 'light'+clr)] = f'1;{make_fgcode(clr)}' 
-        bgcodes[clr if clr=='yellow' else ('gray' if clr=='black' else 'light'+clr)] = f'{make_fgcode(clr)}'
+        fgcodes[clr if clr=='yellow' else ('gray' if clr=='black' else 'light'+clr)] = f'1;{make_fgcode(clr)}'
     
     return fgcodes, bgcodes
 

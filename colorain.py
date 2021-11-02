@@ -9,7 +9,13 @@ import re
 ##################################################
 class StyledText:
     def __init__(self, text):
-        self.text = text
+        if isinstance(text, str):
+            self.text = text
+        elif isinstance(text, StyledText):
+            self.text = text.text
+        else:
+            raise InvalidInputError(str(type(text)))
+
         self.parsed = self.parse_color()
    
     def parse_color(self):
@@ -24,10 +30,16 @@ class StyledText:
         # Defining token pattern
         TAG_PTN = r'<(B|I|U|/|(?:f=.{0,2})|(?:b=.{0,2}))' +\
                     r'(?:;(B|I|U|(?:f=.{0,2})|(?:b=.{0,2})))?'*4 + '>'
-        for tag in re.findall(TAG_PTN, parsed_text):
-            mx_replacer = parse_token(tag) if replacer=='color' else ''
-            parsed_text = parsed_text.replace(f"<{';'.join(tag).strip(';')}>", mx_replacer)
+        
+        tags = re.findall(TAG_PTN, parsed_text)
+        if len(tags):
+            if self.text.count('</>')==0:
+                raise MissingEndTagError
 
+            for tag in tags:
+                mx_replacer = parse_token(tag) if replacer=='color' else ''
+                parsed_text = parsed_text.replace(f"<{';'.join(tag).strip(';')}>", mx_replacer)
+        
         return parsed_text
    
     def add_fg_color(self, color):
@@ -164,3 +176,20 @@ class Bold(FmtText):
 class Underline(FmtText):
     def __init__(self, text):
         super().__init__(text, 'U')
+
+
+##################################################
+# Helper function for viewing available styles #
+##################################################
+def styles_guide():
+    print(StyledText("<f=y;b=r;U>Foreground:</>"))
+    for fmt in FMT_CODE:
+        print(StyledText(f"<{fmt}>{FMT_NAMES[fmt]}</>: <<f=lr>{fmt}</>>"))
+    for clr in fgtokens:
+        token = fgtokens[clr]
+        print(StyledText(f"<{token}>{clr}</>: <<f=lr>{token}</>>"))
+
+    print(StyledText("<f=y;b=r;U>Background:</>"))
+    for clr in bgtokens:
+        token = bgtokens[clr]
+        print(StyledText(f"<{token}>{clr}</>: <<f=lr>{token}</>>"))

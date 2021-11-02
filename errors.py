@@ -33,3 +33,14 @@ class TokenSyntaxError(Exception):
 class EmptyTokenError(Exception):
     def __init__(self):
         super().__init__("The start token is empty")
+
+class MissingEndTagError(Exception):
+    def __init__(self):
+        super().__init__("The input doesn't have an end tag.")
+
+class InvalidInputError(Exception):
+    def __init__(self, inp_type):
+        self.inp_type = inp_type
+    
+    def __str__(self):
+        return f"The input is of unsupported datatype: {self.inp_type}"
