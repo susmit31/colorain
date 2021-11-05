@@ -4,7 +4,7 @@ from .errors import *
 ##################################################
 # version info #
 ##################################################
-VERSION = "0.0.30"
+VERSION = "0.0.34"
 
 
 ##################################################
@@ -72,8 +72,9 @@ def parse_token(token):
     for subtoken in token:
         if len(subtoken):
             if subtoken[0] in ['f','b']:
+                abbrs = fg_abbrs if subtoken[0]=='f' else bg_abbrs
                 prop_val = subtoken.split('=')[1].strip()
-                if prop_val not in fg_abbrs:
+                if prop_val not in abbrs:
                     if prop_val:
                         raise InvalidValueError(subtoken[0], prop_val)
                     else:
@@ -120,7 +121,7 @@ def make_clrcodes():
     
     for clr in CLR_CODE:
         fgcodes['orange' if clr=='yellow' else clr] = make_fgcode(clr)
-        bgcodes['orange' if clr=='yellow' else clr] = make_bgcode(clr)
+        bgcodes[clr] = make_bgcode(clr)
     for clr in CLR_CODE:
         fgcodes[clr if clr=='yellow' else ('gray' if clr=='black' else 'light'+clr)] = f'1;{make_fgcode(clr)}'
     

@@ -199,7 +199,7 @@ def styles_guide():
 # Welcome message #
 ##################################################
 print(StyledText("<f=o>############################################################</>"))
-print(StyledText(f"<f=lp>Welcome to</> <f=lr>c<f=o>o<f=y>l<f=g>o<f=b>r<f=gr>a<f=lr>i<f=c>n </> <B>{VERSION}</>!"))
-print(StyledText("<f=lp>For getting help on styling, run <f=r>styles_guide()</>. <f=y>Have fun!</>"))
+print(StyledText(f"<f=lc>Welcome to</> <f=lr>c<f=o>o<f=y>l<f=g>o<f=b>r<f=gr>a<f=lr>i<f=c>n </> <B>{VERSION}</>!"))
+print(StyledText("<f=lc>For getting help on styling, run <f=r>styles_guide()</>. <f=y>Have fun!</>"))
 print(StyledText("<f=o>############################################################</>"))
 print()
