@@ -1,4 +1,4 @@
-# Colorain v0.0.35
+# Colorain v0.0.37
 Ever wondered how some people make those console programmes print in pretty colours? Well, the answer is simple: there are ANSI colour codes with which you have to tag up the text. The problem is, these codes are pretty cumbersome to remember and are not built into Python either. And so typically people write bland, all-whites console programmes. Colorain is a package that makes printing coloured text to the console a piece of cake. Using a simple markup designed just for styling text on the terminal, Colorain allows you to quickly add styles to any Python console project you might have. There's a few other packages that help you to print styled text with Python, but none with the ease of use as Colorain (well, at least to me :p).
 
 ## Installation

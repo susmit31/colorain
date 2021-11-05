@@ -196,10 +196,12 @@ def styles_guide():
 
 
 ##################################################
-# Welcome message #
+# Welcome message in interactive mode #
 ##################################################
-print(StyledText("<f=o>############################################################</>"))
-print(StyledText(f"<f=lc>Welcome to</> <f=lr>c<f=o>o<f=y>l<f=g>o<f=b>r<f=gr>a<f=lr>i<f=c>n </> <B>{VERSION}</>!"))
-print(StyledText("<f=lc>For getting help on styling, run <f=r>styles_guide()</>. <f=y>Have fun!</>"))
-print(StyledText("<f=o>############################################################</>"))
-print()
+import __main__ as main
+if not hasattr(main, '__file__'):
+    print(StyledText("<f=o>############################################################</>"))
+    print(StyledText(f"<f=lc>Welcome to</> <f=lr>c<f=o>o<f=y>l<f=g>o<f=b>r<f=gr>a<f=lr>i<f=c>n </> <B>{VERSION}</>!"))
+    print(StyledText("<f=lc>For getting help on styling, run <f=r>styles_guide()</>. <f=y>Have fun!</>"))
+    print(StyledText("<f=o>############################################################</>"))
+    print()
