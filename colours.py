@@ -29,6 +29,16 @@ FMT_CODE = {
 
 FMT_NAMES = {'B': 'bold', 'I': 'italic', 'U': 'underline'}
 
+
+##################################################
+# Block Elements #
+##################################################
+BLOCK_FULL = chr(9608)
+BLOCK_THREEQTR = chr(9619)
+BLOCK_HALF = chr(9618)
+BLOCK_QTR = chr(9817)
+
+
 ##################################################
 # Foreground and background #
 ##################################################
