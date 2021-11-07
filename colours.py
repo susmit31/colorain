@@ -4,7 +4,7 @@ from .errors import *
 ##################################################
 # version info #
 ##################################################
-VERSION = "0.0.37"
+VERSION = "0.0.38"
 
 
 ##################################################
@@ -18,6 +18,7 @@ CLR_CODE = {
     'blue':4,
     'purple':5,
     'cyan':6,
+    'gray':7
 }
 
 FMT_CODE = {
@@ -124,6 +125,7 @@ def make_clrcodes():
         bgcodes[clr] = make_bgcode(clr)
     for clr in CLR_CODE:
         fgcodes[clr if clr=='yellow' else ('gray' if clr=='black' else 'light'+clr)] = f'1;{make_fgcode(clr)}'
+    bgcodes['gray'] = make_bgcode('gray')
     
     return fgcodes, bgcodes
 
