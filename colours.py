@@ -38,6 +38,8 @@ BLOCK_THREEQTR = chr(9619)
 BLOCK_HALF = chr(9618)
 BLOCK_QTR = chr(9817)
 
+BLOCKS = [BLOCK_FULL, BLOCK_THREEQTR, BLOCK_HALF, BLOCK_QTR]
+
 
 ##################################################
 # Foreground and background #
