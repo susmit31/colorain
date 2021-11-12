@@ -1,106 +1,17 @@
 import sys
 import time
 from .colorain import *
+from .console_game_engine import *
 import random
 
 Stx = StyledText
 
-BLOCK_FULL = chr(9608)
-BLOCK_THREEQTR = chr(9619)
-BLOCK_HALF = chr(9618)
-BLOCK_QTR = chr(9817)
-
-BLOCKS = [BLOCK_FULL, BLOCK_THREEQTR, BLOCK_HALF, BLOCK_QTR]
-
-def move_cursor(line, col):
-    base = "\033["
-
-    linedir = "A" if line < 0 else "B"
-    coldir = "C" if col > 0 else "D"
-    
-    linecode = f"{base}{abs(line)}{linedir}"
-    colcode = f"{base}{abs(col)}{coldir}"
-    sys.stdout.write(linecode)
-    sys.stdout.write(colcode) 
-
-
-def getChar():
-    try:
-        # for Windows-based systems
-        import msvcrt # If successful, we are on Windows
-        return msvcrt.getch()
-
-    except ImportError:
-        # for POSIX-based systems (with termios & tty support)
-        import tty, sys, termios  # raises ImportError if unsupported
-
-        fd = sys.stdin.fileno()
-        oldSettings = termios.tcgetattr(fd)
-
-        try:
-            tty.setcbreak(fd)
-            answer = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, oldSettings)
-
-        return answer
-
-
-class Scene2D:
-    def __init__(self, width, height, colour = None):
-        self.width = width
-        self.height = height
-        self.scene = [[BLOCKS[0]][:]*2*self.width for i in range(self.height)]
-    
-    def render(self, reset=True):
-        sys.stdout.write('\n'.join([''.join(ln) for ln in self.scene]))
-        if reset:
-            move_cursor(-self.height+1, -2*self.width)
-        else: print()
-
-    def edit_pixel(self, x, y, newval):
-        self.scene[y][2*x] = newval
-        self.scene[y][2*x+1] = newval
-    
-    def reset_pixel(self, x, y):
-        self.edit_pixel(x, y, BLOCKS[0])
-
-    def paint_pixel(self, x, y, colour):
-        self.edit_pixel(x, y, Stx(f"<{fgtokens[colour]}>{BLOCKS[0]}</>").parsed)
-
-
-class Coord2D:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-    
-    def __repr__(self):
-        return f"{(self.x, self.y)}"
-    
-    def __add__(self, coord):
-        return Coord2D(self.x + coord.x, self.y + coord.y)
-    
-    def __sub__(self, coord):
-        return Coord2D(self.x - coord.x, self.y - coord.y)
-    
-    def __eq__(self, coord):
-        return self.x == coord.x and self.y == coord.y
-
-class Snake:
+class Snake(Sprite):
     def __init__(self, head_init, scene):
-        self.length = 2
+        if isinstance(head_init, tuple):
+            head_init = Coord2D(*head_init)
         self.positions =  [head_init, Coord2D(head_init.x-1, head_init.y)]
-        self.scene = scene
-        self.draw( )
-
-    def draw(self):
-        self.scene.edit_pixel(self.positions[0].x, self.positions[0].y, Stx(f"<f=lg;b=b>{BLOCKS[2]}</>").parsed)
-        for pos in self.positions[1:]:
-            self.scene.edit_pixel(pos.x, pos.y, Stx(f"<f=lr;b=y>{BLOCKS[2]}</>").parsed)
-    
-    def erase(self):
-        for pos in self.positions:
-            self.scene.reset_pixel(pos.x, pos.y)
+        super().__init__(self.positions, scene)
 
     def grow(self, direction):
         tail = self.positions[-1]
@@ -112,13 +23,6 @@ class Snake:
             dx = -1 if direction=='d' else (1 if direction=='a' else 0)
             dy = -1 if direction=='s' else (1 if direction=='w' else 0)
             self.positions.append(Coord2D((tail.x + dx)%self.scene.width, (tail.y + dy)%self.scene.height))
-        self.draw()
-
-    def translate(self, x, y):
-        self.erase()
-        for pos in self.positions:
-            pos.x += x
-            pos.y += y
         self.draw()
 
     def move(self, direction):
@@ -161,7 +65,7 @@ class Snake:
             prevdir = currpos - currpos_old
         
         self.draw()
-        # everything follows predecessor
+
 
 def spawn_apple(scene, snake):
     width = scene.width
