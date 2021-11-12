@@ -8,6 +8,7 @@
 ##################################################
 # Imports #
 ##################################################
+import sys
 from .colorain import *
 Stx = StyledText
 
@@ -48,7 +49,7 @@ def getChar():
 
     except ImportError:
         # for POSIX-based systems (with termios & tty support)
-        import tty, sys, termios  # raises ImportError if unsupported
+        import tty, termios  # raises ImportError if unsupported
 
         fd = sys.stdin.fileno()
         oldSettings = termios.tcgetattr(fd)
@@ -107,18 +108,14 @@ class Scene2D:
         self.scene[y][2*x+1] = newval
     
     def reset_pixel(self, pixel_loc):
-        if isinstance(pixel_loc, Coord2D):
-            x, y = pixel_loc.x, pixel_loc.y
-        elif isinstance(pixel_loc, tuple):
-            x, y = pixel_loc[0], pixel_loc[1]
-        self.edit_pixel(x, y, BLOCKS[0])
+        if isinstance(pixel_loc, tuple):
+            pixel_loc = Coord2D(pixel_loc[0], pixel_loc[1])
+        self.edit_pixel(pixel_loc, BLOCKS[0])
 
     def paint_pixel(self, pixel_loc, colour):
-        if isinstance(pixel_loc, Coord2D):
-            x, y = pixel_loc.x, pixel_loc.y
-        elif isinstance(pixel_loc, tuple):
-            x, y = pixel_loc[0], pixel_loc[1]
-        self.edit_pixel(x, y, Stx(f"<{fgtokens[colour]}>{BLOCKS[0]}</>").parsed)
+        if isinstance(pixel_loc, tuple):
+            pixel_loc = Coord2D(pixel_loc[0], pixel_loc[1])
+        self.edit_pixel(pixel_loc, Stx(f"<{fgtokens[colour]}>{BLOCKS[0]}</>").parsed)
 
 
 class Sprite:
@@ -128,13 +125,13 @@ class Sprite:
         self.draw()
 
     def draw(self):
-        self.scene.edit_pixel(self.positions[0].x, self.positions[0].y, Stx(f"<f=lg;b=b>{BLOCKS[2]}</>").parsed)
+        self.scene.edit_pixel(self.positions[0], Stx(f"<f=lg;b=b>{BLOCKS[2]}</>").parsed)
         for pos in self.positions[1:]:
-            self.scene.edit_pixel(pos.x, pos.y, Stx(f"<f=lr;b=y>{BLOCKS[2]}</>").parsed)
+            self.scene.edit_pixel(pos, Stx(f"<f=lr;b=y>{BLOCKS[2]}</>").parsed)
     
     def erase(self):
         for pos in self.positions:
-            self.scene.reset_pixel(pos.x, pos.y)
+            self.scene.reset_pixel(pos)
 
     def translate(self, x, y):
         self.erase()

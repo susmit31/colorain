@@ -11,7 +11,7 @@ class Snake(Sprite):
         if isinstance(head_init, tuple):
             head_init = Coord2D(*head_init)
         self.positions =  [head_init, Coord2D(head_init.x-1, head_init.y)]
-        super().__init__(self.positions, scene)
+        super().__init__(scene, self.positions)
 
     def grow(self, direction):
         tail = self.positions[-1]
@@ -80,7 +80,7 @@ def spawn_apple(scene, snake):
         for pos in snake.positions:
             if pos == apple_pos:
                 ok = False
-    scene.paint_pixel(apple_pos.x, apple_pos.y, 'lightred')
+    scene.paint_pixel(apple_pos, 'lightred')
     
     return apple_pos
 
@@ -94,7 +94,7 @@ def update_scoreboard(prev_score, scoreboard):
     return curr_score, scoreboard
 
 
-def snake_game(width, height, start_pos, fps = 10):
+def snake_game(width = 20, height = 20, start_pos = (5,3), fps = 32):
     gamesc = Scene2D(width, height)
     
     scoreboard = Scene2D(width, 1)
