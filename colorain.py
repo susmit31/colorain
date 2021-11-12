@@ -29,7 +29,7 @@ class StyledText:
         
         # Defining token pattern
         TAG_PTN = r'<(B|I|U|/|(?:f=.{0,2})|(?:b=.{0,2}))' +\
-                    r'(?:;(B|I|U|(?:f=.{0,2})|(?:b=.{0,2})))?'*4 + '>'
+                    r'(?:;\s*(B|I|U|(?:f=.{0,2})|(?:b=.{0,2})))?'*4 + '>'
         
         tags = re.findall(TAG_PTN, parsed_text)
         if len(tags):
