@@ -1,8 +1,9 @@
 import sys
 import time
+import random
+import threading
 from .colorain import *
 from .engine import *
-import random
 
 
 class Snake(Sprite):
@@ -36,44 +37,16 @@ class Snake(Sprite):
             return self.positions[-1]
         self.erase()
 
+        predecessor_old_pos = self.positions[0]
         self.positions[0] += direction
-        prevdir = direction
 
         for i in range(1,len(self.positions)):
-            currpos = self.positions[i]
-            currpos_old = Coord2D(currpos.x, currpos.y)
-            prevpos = self.positions[i-1]
+            curr_node_old_pos = self.positions[i]
+            self.positions[i] = predecessor_old_pos
+            predecessor_old_pos = curr_node_old_pos
             
-            if currpos.x == prevpos.x:
-                if currpos.y > prevpos.y:
-                    currpos.y -= 1 
-                elif currpos.y < prevpos.y:
-                    currpos.y += 1
-                else:
-                    pass
-            elif currpos.y == prevpos.y:
-                if currpos.x > prevpos.x:
-                    currpos.x -= 1
-                elif currpos.x < prevpos.x:
-                    currpos.x += 1
-                else:
-                    pass
-            else:
-                if prevdir.x in [-1,1]:
-                    if currpos.y < prevpos.y:
-                        currpos.y += 1
-                    elif currpos.y > prevpos.y:
-                        currpos.y -= 1
-                elif prevdir.y in [-1,1]:
-                    if currpos.x < prevpos.x:
-                        currpos.x += 1
-                    elif currpos.x > prevpos.x:
-                        currpos.x -= 1
-            
-            prevdir = currpos - currpos_old
-        
         self.draw()
-        return currpos_old
+        return curr_node_old_pos
 
 
 def spawn_apple(scene, snake):
@@ -116,26 +89,45 @@ def key_to_coord(key):
         return Coord2D(0,0)
 
 
-def snake_game(width = 20, height = 20, start_pos = (5,3), fps = 32):
+def handle_input(dirn):
+    key = ''
+
+    while key != 'q':
+        key = getChar()
+        if key=='q': 
+            dirn[0] =  None
+            break
+        elif key=='r':
+            dirn[1] = 'r'
+        else:
+            dirn[0] = key_to_coord(key)
+    
+
+
+def snake_game(width = 20, height = 20, start_pos = (5,3), fps = 2):
     gamesc = Scene2D(width, height)
     
     scoreboard = Scene2D(width, 1)
     score, scoreboard = update_scoreboard(-1, scoreboard)
 
     snake = Snake(Coord2D(*start_pos), gamesc)
-    
+    dirn = [key_to_coord('d'), '']
     apple_pos = spawn_apple(gamesc, snake)
     
+    inp_thread = threading.Thread(target = handle_input, args=(dirn,))
+    inp_thread.start()
+
     while True:
         scoreboard.render(reset=False)
         gamesc.render()
-        key = getChar()
 
-        if key == 'q':
-            break
+        if dirn[0] is not None:
+            tail_last_pos = snake.move(dirn[0])
+            if dirn[1]=='r':
+                snake.rotate(math.pi/2)
         else:
-            tail_last_pos = snake.move(key_to_coord(key))
-        
+            break
+    
         if snake.positions[0] == apple_pos:
             score, scoreboard = update_scoreboard(score, scoreboard)
             snake.grow(tail_last_pos)

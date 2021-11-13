@@ -10,8 +10,7 @@
 ##################################################
 import sys
 from .colorain import *
-Stx = StyledText
-
+import math
 
 ##################################################
 # Block Elements #
@@ -82,7 +81,46 @@ class Coord2D:
     
     def __eq__(self, coord):
         return self.x == coord.x and self.y == coord.y
+    
+    def dot(self, coord):
+        return self.x*coord.x + self.y*coord.y
 
+    def rotate(self, angle, reference):
+        rotn_mat = [Coord2D(math.cos(angle), -math.sin(angle)), \
+            Coord2D(math.sin(angle), math.cos(angle))]
+        newpt = Coord2D(rotn_mat[0].dot(self - reference), rotn_mat[1].dot(self - reference))
+        self.x = newpt.x + reference.x
+        self.y = newpt.y + reference.y
+
+class Vector2D:
+    def __init__(self, start, end):
+        if isinstance(start, tuple):
+            start = Coord2D(*start)
+        if isinstance(end, tuple):
+            end = Coord2D(*end)
+        self.start = start
+        self.end = end
+        self.x = self.end.x - self.start.x
+        self.y = self.end.y - self.start.y
+
+    def __repr__(self):
+        return f"{self.x}i + {self.y}j"
+    
+    def __add__(self, vector):
+        sum_start = self.start
+        sum_end = self.end + Coord2D(vector.x, vector.y)
+        return Vector2D(sum_start, sum_end)
+
+    def dot(self, vector):
+        return self.x*vector.x + self.y*vector.y
+
+    def length(self):
+        sqr_len = self.dot(self)
+        print(f"{chr(int('221a',16))}{sqr_len}")
+        return   math.sqrt(sqr_len)
+
+    def rotate(self, angle):
+        return Vector2D(self.start.rotate(angle), self.end.rotate(angle))
 
 ##################################################
 # 2D scene (i.e., 2D canvas) #
@@ -137,3 +175,19 @@ class Sprite:
             pos.x += x
             pos.y += y
         self.draw()
+    
+    def rotate(self, angle, reference):
+        self.erase()
+        for pos in self.positions:
+            pos.rotate(angle, reference)
+            pos.x = math.floor(pos.x)
+            pos.y = math.floor(pos.y)
+        self.draw()
+
+
+class VLine(Sprite):
+    def draw(self):
+        for pos in self.positions:
+            self.scene.paint_pixel(pos, 'yellow')
+    def rotate(self, angle):
+        super().rotate(angle, self.positions[0])
