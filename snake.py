@@ -1,21 +1,27 @@
 import sys
 import time
 from .colorain import *
-from .console_game_engine import *
+from .engine import *
 import random
 
-Stx = StyledText
 
 class Snake(Sprite):
     def __init__(self, head_init, scene):
         if isinstance(head_init, tuple):
             head_init = Coord2D(*head_init)
-        self.positions =  [head_init, Coord2D(head_init.x-1, head_init.y)]
+        self.positions =  [head_init, Coord2D(head_init.x-1, head_init.y), Coord2D(head_init.x-2, head_init.y)]
         super().__init__(scene, self.positions)
+    
+    def draw(self):
+        self.scene.edit_pixel(self.positions[0], Stx(f"<f=lg;b=b>-</>").parsed)
+        for pos in self.positions[1:]:
+            self.scene.edit_pixel(pos, Stx(f"<f=lr;b=y>{BLOCKS[2]}</>").parsed)
 
     def grow(self, direction):
         tail = self.positions[-1]
-        if direction == 'VER':
+        if isinstance(direction, Coord2D):
+            self.positions.append(direction)
+        elif direction == 'VER':
             self.positions.append(Coord2D(tail.x, tail.y-1))
         elif direction == 'HOR':
             self.positions.append(Coord2D(tail.x-1, tail.y))
@@ -26,6 +32,8 @@ class Snake(Sprite):
         self.draw()
 
     def move(self, direction):
+        if direction == Coord2D(0,0): 
+            return self.positions[-1]
         self.erase()
 
         self.positions[0] += direction
@@ -65,6 +73,7 @@ class Snake(Sprite):
             prevdir = currpos - currpos_old
         
         self.draw()
+        return currpos_old
 
 
 def spawn_apple(scene, snake):
@@ -94,6 +103,19 @@ def update_scoreboard(prev_score, scoreboard):
     return curr_score, scoreboard
 
 
+def key_to_coord(key):
+    if key == 'w':
+        return Coord2D(0,-1)
+    elif key == 's':
+        return Coord2D(0, 1)
+    elif key == 'a':
+        return Coord2D(-1,0)
+    elif key == 'd':
+        return Coord2D(1, 0)
+    else:
+        return Coord2D(0,0)
+
+
 def snake_game(width = 20, height = 20, start_pos = (5,3), fps = 32):
     gamesc = Scene2D(width, height)
     
@@ -109,20 +131,14 @@ def snake_game(width = 20, height = 20, start_pos = (5,3), fps = 32):
         gamesc.render()
         key = getChar()
 
-        if key == 'w':
-            snake.move(Coord2D(0,-1))
-        elif key == 's':
-            snake.move(Coord2D(0, 1))
-        elif key == 'a':
-            snake.move(Coord2D(-1,0))
-        elif key == 'd':
-            snake.move(Coord2D(1, 0))
-        elif key == 'q':
+        if key == 'q':
             break
+        else:
+            tail_last_pos = snake.move(key_to_coord(key))
         
         if snake.positions[0] == apple_pos:
             score, scoreboard = update_scoreboard(score, scoreboard)
-            snake.grow(key)
+            snake.grow(tail_last_pos)
             apple_pos = spawn_apple(gamesc, snake)
         
         move_cursor(-1,-1)

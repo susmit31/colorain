@@ -1,7 +1,7 @@
 ##################################################
 ##################################################
 # Submodule for turning the console into a canvas #
-# CGE = Console Game Engine #
+# / Console Game Engine #
 ##################################################
 ##################################################
 
@@ -19,7 +19,7 @@ Stx = StyledText
 BLOCK_FULL = chr(9608)
 BLOCK_THREEQTR = chr(9619)
 BLOCK_HALF = chr(9618)
-BLOCK_QTR = chr(9817)
+BLOCK_QTR = chr(9617)
 
 BLOCKS = [BLOCK_FULL, BLOCK_THREEQTR, BLOCK_HALF, BLOCK_QTR]
 
@@ -125,9 +125,7 @@ class Sprite:
         self.draw()
 
     def draw(self):
-        self.scene.edit_pixel(self.positions[0], Stx(f"<f=lg;b=b>{BLOCKS[2]}</>").parsed)
-        for pos in self.positions[1:]:
-            self.scene.edit_pixel(pos, Stx(f"<f=lr;b=y>{BLOCKS[2]}</>").parsed)
+        pass
     
     def erase(self):
         for pos in self.positions:

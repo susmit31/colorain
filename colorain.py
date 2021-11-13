@@ -120,6 +120,8 @@ class FGLtBlue(FGColor):
     def __init__(self, text):
         super().__init__(text, 'lightblue')
 
+Stx = StyledText
+
 
 ##################################################
 # Background colouring: wrapper classes #
