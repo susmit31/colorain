@@ -9,8 +9,9 @@
 # Imports #
 ##################################################
 import sys
-from .colorain import *
 import math
+import threading
+from .colorain import *
 
 ##################################################
 # Block Elements #
@@ -31,8 +32,8 @@ def move_cursor(line, col):
     linedir = "A" if line < 0 else "B"
     coldir = "C" if col > 0 else "D"
     
-    linecode = f"{base}{abs(line)}{linedir}"
-    colcode = f"{base}{abs(col)}{coldir}"
+    linecode = f"{base}{abs(line)}{linedir}" if line!=0 else ""
+    colcode = f"{base}{abs(col)}{coldir}" if col!=0 else ""
     sys.stdout.write(linecode)
     sys.stdout.write(colcode) 
 
@@ -61,6 +62,9 @@ def getChar():
 
         return answer
 
+def run_input_thread(handle_input, args):
+    inp_thread = threading.Thread(target = handle_input, args = args)
+    inp_thread.start()
 
 ##################################################
 # 2D coordinate #
@@ -162,8 +166,9 @@ class Sprite:
         self.positions = positions
         self.draw()
 
-    def draw(self):
-        pass
+    def draw(self, color):
+        for pos in self.positions:
+            self.scene.paint_pixel(pos, color)
     
     def erase(self):
         for pos in self.positions:
@@ -186,8 +191,19 @@ class Sprite:
 
 
 class VLine(Sprite):
-    def draw(self):
+    def draw(self, color='red'):
         for pos in self.positions:
-            self.scene.paint_pixel(pos, 'yellow')
+            self.scene.paint_pixel(pos, color)
+    def rotate(self, angle):
+        super().rotate(angle, self.positions[0])
+
+class Rect(Sprite):
+    def __init__(self, scene, topleft, width, height):
+        positions = []
+        for i in range(width):
+            for j in range(height):
+                positions.append(topleft + Coord2D(i,j))
+        super().__init__(scene, positions)
+    
     def rotate(self, angle):
         super().rotate(angle, self.positions[0])
